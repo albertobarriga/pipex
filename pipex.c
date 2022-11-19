@@ -6,7 +6,7 @@
 /*   By: abarriga <abarriga@student.42malaga.       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/16 18:01:07 by abarriga          #+#    #+#             */
-/*   Updated: 2022/11/18 14:28:54 by alberto          ###   ########.fr       */
+/*   Updated: 2022/11/19 15:14:55 by abarriga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,54 +16,113 @@
 #include <fcntl.h>
 #include "pipex.h"
 
-int main (int argc, char **argv, char **envp)
+/* static char *split_arg1(char *argv,) */
+/* { */
+/* 	char	**all_args; */
+/* 	char	*cmd; */
+/* 	char	*flag; */
+	
+/* 	all_args = ft_split(argv[2], ' '); */
+
+/* } */	
+
+static void first_child(int *pp, char **argv, char **envp)
+{
+	int fdin;
+	char *path;
+
+	fdin = open(argv[1], O_RDONLY);
+	dup2(fdin, STDIN_FILENO);
+	close(fdin);
+
+	dup2(pp[1], STDOUT_FILENO);
+	close(pp[1]);
+	close(pp[0]);
+
+	path = find_path(envp, argv[2]);
+
+	char *arguments[20] = {path, NULL};
+	execve(path, arguments, envp);
+	printf("ERROR: ha fallado execve1\n");
+	exit(-1);
+}
+static void second_child(int *pp, char **argv, char **envp)
+{	
+	char *path;
+
+	dup2(pp[0], STDIN_FILENO);
+	close(pp[0]);
+	int fdout = open(argv[4], O_WRONLY | O_CREAT, 0644);
+	dup2(fdout, STDOUT_FILENO);
+	close(fdout);
+	path = find_path(envp, argv[3]);
+
+	char *arguments[20] = {path, NULL};
+	execve(path, arguments, envp);
+	printf("ERROR: ha fallado execve2\n");
+	exit(-1);
+}
+
+int main(int argc, char **argv, char **envp)
 {
 	if (argc != 5)
 		return (0);
 
 	// Prueba
-	printf("%s\n", find_path(envp, argv[2]));
-	return (0);
+	/* printf("%s\n", find_path(envp, argv[2])); */
+	/* printf("%s\n", find_path(envp, argv[3])); */
+
+	/* return (0); */
 
 	int status;
 	int pp[2];
 
 	if (pipe(pp) == -1)
 		return (0);
-	int pid = fork();
+
+
+	int pid;
+	pid = fork();
+
+	if (pid == -1)
+		perror("Error");
 	
 	if (pid == 0)
 	{
-		int fdin = open(argv[1], O_RDONLY);
-		dup2(fdin, STDIN_FILENO);
-		close(fdin);
+		first_child(pp, argv, envp);
 
-		dup2(pp[1], STDOUT_FILENO);
-		close(pp[1]);
-		close(pp[0]);
+		/* int fdin = open(argv[1], O_RDONLY); */
+		/* dup2(fdin, STDIN_FILENO); */
+		/* close(fdin); */
 
-		char *arguments[20] = {argv[1], NULL};
-		execve(argv[1], arguments, envp);
-		printf("ERROR: ha fallado execve\n");
-		exit(-1);
+		/* dup2(pp[1], STDOUT_FILENO); */
+		/* close(pp[1]); */
+		/* close(pp[0]); */
+
+		/* char *arguments[20] = {argv[1], NULL}; */
+		/* execve(argv[1], arguments, envp); */
+		/* printf("ERROR: ha fallado execve\n"); */
+		/* exit(-1); */
 	}
-
 	close(pp[1]);
 
-	int pid2 = fork();
+	int pid2;
+	pid2 = fork();
 
 	if (pid2 == 0)
 	{
-		dup2(pp[0], STDIN_FILENO);
-		close(pp[0]);
-		int fdout = open(argv[4], O_WRONLY | O_CREAT, 0644);
-		dup2(fdout, STDOUT_FILENO);
-		close(fdout);
+		second_child(pp, argv, envp);
 
-		char *arguments[20] = {argv[3], NULL};
-		execve(argv[3], arguments, envp);
-		printf("ERROR: ha fallado execve\n");
-		exit(-1);
+		/* dup2(pp[0], STDIN_FILENO); */
+		/* close(pp[0]); */
+		/* int fdout = open(argv[4], O_WRONLY | O_CREAT, 0644); */
+		/* dup2(fdout, STDOUT_FILENO); */
+		/* close(fdout); */
+
+		/* char *arguments[20] = {argv[3], NULL}; */
+		/* execve(argv[3], arguments, envp); */
+		/* printf("ERROR: ha fallado execve\n"); */
+		/* exit(-1); */
 	}
 
 	close(pp[0]);
