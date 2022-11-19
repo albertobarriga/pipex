@@ -6,7 +6,7 @@
 /*   By: abarriga <abarriga@student.42malaga.       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/16 18:01:07 by abarriga          #+#    #+#             */
-/*   Updated: 2022/11/16 20:22:25 by abarriga         ###   ########.fr       */
+/*   Updated: 2022/11/18 14:28:54 by alberto          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
+#include "pipex.h"
 
 int main (int argc, char **argv, char **envp)
 {
-	printf("%s\n", envp[13]);
+	if (argc != 5)
+		return (0);
+
+	// Prueba
+	printf("%s\n", find_path(envp, argv[2]));
+	return (0);
+
 	int status;
 	int pp[2];
 

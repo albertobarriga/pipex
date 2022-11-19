@@ -23,7 +23,6 @@ $(NAME): $(OBJ)
 	@make -C $(LIB_DIR)
 	@cp $(LIB_DIR)$(LIB) .
 	$(CC) -o $(NAME) $(OBJ) $(LIB)
-	${NAME} ${OBJ}
 	
 
 clean:
