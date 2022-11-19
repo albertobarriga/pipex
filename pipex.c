@@ -6,7 +6,7 @@
 /*   By: abarriga <abarriga@student.42malaga.       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/16 18:01:07 by abarriga          #+#    #+#             */
-/*   Updated: 2022/11/19 15:14:55 by abarriga         ###   ########.fr       */
+/*   Updated: 2022/11/19 17:01:37 by abarriga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,21 +16,29 @@
 #include <fcntl.h>
 #include "pipex.h"
 
-/* static char *split_arg1(char *argv,) */
-/* { */
-/* 	char	**all_args; */
-/* 	char	*cmd; */
-/* 	char	*flag; */
+static char *split_arg1(char *argv,)
+{
+	char	**all_arg;
+	char	*cmd;
+	char	*flag;
+	int		i;
 	
-/* 	all_args = ft_split(argv[2], ' '); */
-
-/* } */	
+	all_arg = ft_split(argv[2], ' ');
+	cmd = all_arg[0];
+	i = 1;
+	while (all_arg[i])
+	{
+		flag[i - 1] = all_arg[i];
+		i++;
+	}
+	
+}	
 
 static void first_child(int *pp, char **argv, char **envp)
 {
 	int fdin;
 	char *path;
-
+	
 	fdin = open(argv[1], O_RDONLY);
 	dup2(fdin, STDIN_FILENO);
 	close(fdin);
