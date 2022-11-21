@@ -6,7 +6,7 @@
 /*   By: abarriga <abarriga@student.42malaga.       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/16 18:01:07 by abarriga          #+#    #+#             */
-/*   Updated: 2022/11/19 17:01:37 by abarriga         ###   ########.fr       */
+/*   Updated: 2022/11/21 16:55:22 by abarriga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,28 +16,31 @@
 #include <fcntl.h>
 #include "pipex.h"
 
-static char *split_arg1(char *argv,)
+static char *split_arg(char *argv,)
 {
 	char	**all_arg;
+	/* char	**all_arg2 */
 	char	*cmd;
 	char	*flag;
 	int		i;
 	
 	all_arg = ft_split(argv[2], ' ');
-	cmd = all_arg[0];
-	i = 1;
-	while (all_arg[i])
-	{
-		flag[i - 1] = all_arg[i];
-		i++;
-	}
+	/* all_arg2 = ft_split(argv[3], ' '); */
+	/* cmd = all_arg[0]; */
+	/* i = 1; */
+	/* while (all_arg[i]) */
+	/* { */
+	/* 	flag[i - 1] = all_arg[i]; */
+	/* 	i++; */
+	/* } */
 	
-}	
+/* } */	
 
 static void first_child(int *pp, char **argv, char **envp)
 {
-	int fdin;
-	char *path;
+	int		fdin;
+	char	*path;
+	char	**all_arg;
 	
 	fdin = open(argv[1], O_RDONLY);
 	dup2(fdin, STDIN_FILENO);
@@ -46,10 +49,13 @@ static void first_child(int *pp, char **argv, char **envp)
 	dup2(pp[1], STDOUT_FILENO);
 	close(pp[1]);
 	close(pp[0]);
-
-	path = find_path(envp, argv[2]);
-
-	char *arguments[20] = {path, NULL};
+	all_arg = split_arg(argv[2]);
+	path = find_path(envp, all_arg[0]);
+		
+	/* char *arguments[20] = {path, NULL}; */
+	/* Tengo qque controlar el numero de flags que me pongan para que no haya leaks, */
+	
+	char *arguments[20] = {path, all_arg, NULL};
 	execve(path, arguments, envp);
 	printf("ERROR: ha fallado execve1\n");
 	exit(-1);
