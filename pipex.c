@@ -6,7 +6,7 @@
 /*   By: abarriga <abarriga@student.42malaga.       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/16 18:01:07 by abarriga          #+#    #+#             */
-/*   Updated: 2022/11/21 16:55:22 by abarriga         ###   ########.fr       */
+/*   Updated: 2022/11/23 17:10:06 by abarriga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,13 @@
 #include <fcntl.h>
 #include "pipex.h"
 
-static char *split_arg(char *argv,)
+static char **split_arg1(char **argv)
 {
 	char	**all_arg;
 	/* char	**all_arg2 */
-	char	*cmd;
-	char	*flag;
-	int		i;
+	/* char	*cmd; */
+	/* char	*flag; */
+	/* int		i; */
 	
 	all_arg = ft_split(argv[2], ' ');
 	/* all_arg2 = ft_split(argv[3], ' '); */
@@ -33,14 +33,38 @@ static char *split_arg(char *argv,)
 	/* 	flag[i - 1] = all_arg[i]; */
 	/* 	i++; */
 	/* } */
+	return (all_arg);
 	
-/* } */	
+}	
+
+static char **split_arg2(char **argv)
+{
+	char	**all_arg2;
+	/* char	**all_arg2 */
+	/* char	*cmd; */
+	/* char	*flag; */
+	/* int		i; */
+	
+	all_arg2 = ft_split(argv[3], ' ');
+	/* all_arg2 = ft_split(argv[3], ' '); */
+	/* cmd = all_arg[0]; */
+	/* i = 1; */
+	/* while (all_arg[i]) */
+	/* { */
+	/* 	flag[i - 1] = all_arg[i]; */
+	/* 	i++; */
+	/* } */
+	return (all_arg2);
+	
+}	
+
+
 
 static void first_child(int *pp, char **argv, char **envp)
 {
 	int		fdin;
 	char	*path;
-	char	**all_arg;
+	char	**all_arg1;
 	
 	fdin = open(argv[1], O_RDONLY);
 	dup2(fdin, STDIN_FILENO);
@@ -49,30 +73,35 @@ static void first_child(int *pp, char **argv, char **envp)
 	dup2(pp[1], STDOUT_FILENO);
 	close(pp[1]);
 	close(pp[0]);
-	all_arg = split_arg(argv[2]);
-	path = find_path(envp, all_arg[0]);
+	all_arg1 = split_arg1(argv);
+	path = find_path(envp, all_arg1[0]);
 		
 	/* char *arguments[20] = {path, NULL}; */
 	/* Tengo qque controlar el numero de flags que me pongan para que no haya leaks, */
 	
-	char *arguments[20] = {path, all_arg, NULL};
-	execve(path, arguments, envp);
+	/* char *arguments[20] = {path, all_arg, NULL}; */	
+	/*execve(path, arguments, envp);*/
+	execve(path, all_arg1, envp);
+
 	printf("ERROR: ha fallado execve1\n");
 	exit(-1);
 }
 static void second_child(int *pp, char **argv, char **envp)
 {	
 	char *path;
+	char **all_arg2;
 
 	dup2(pp[0], STDIN_FILENO);
 	close(pp[0]);
-	int fdout = open(argv[4], O_WRONLY | O_CREAT, 0644);
+	int fdout = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	dup2(fdout, STDOUT_FILENO);
 	close(fdout);
-	path = find_path(envp, argv[3]);
+	all_arg2 = split_arg2(argv);
+	path = find_path(envp, all_arg2[0]);
 
-	char *arguments[20] = {path, NULL};
-	execve(path, arguments, envp);
+	/* char *arguments[20] = {path, NULL}; */
+	/* execve(path, arguments, envp); */
+	execve(path, all_arg2, envp);
 	printf("ERROR: ha fallado execve2\n");
 	exit(-1);
 }
