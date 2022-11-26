@@ -6,7 +6,7 @@
 /*   By: abarriga <abarriga@student.42malaga.       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/16 18:01:07 by abarriga          #+#    #+#             */
-/*   Updated: 2022/11/26 19:33:53 by abarriga         ###   ########.fr       */
+/*   Updated: 2022/11/26 19:48:10 by abarriga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ static void	first_child(int *pp, char **argv, char **envp)
 	all_arg1 = split_arg1(argv);
 	path = find_path(envp, all_arg1[0]);
 	execve(path, all_arg1, envp);
-	write(2,"ERROR: ha fallado execve1\n", 26);
+	perror("Error");
 	exit(-1);
 }
 
@@ -76,7 +76,6 @@ static void	second_child(int *pp, char **argv, char **envp)
 	path = find_path(envp, all_arg2[0]);
 	execve(path, all_arg2, envp);
 	perror("Error");
-	/* write(2, "ERROR: ha fallado execve2\n", 26); */
 	exit(-1);
 }
 
